@@ -129,6 +129,8 @@ string modelCandle(double high, double low, double open, double close) {
 			return "blue_pinbar_bot";//break
 		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeHighClose >= sizeCandle / 3){
 			return "blue_pinbar_top";
+			return "blue_pinbar_top";
+			return "blue_pinbar_top";
 		} else {
 			return "blue_spinningtop";
 			return "blue_spinningtop";
