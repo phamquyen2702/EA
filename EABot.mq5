@@ -6,6 +6,7 @@ input int k_period = 5;
 input int d_period = 3;
 input int slowing = 3;
 input double volumn = 0.01;
+input double breakOut = 100;
 
 // Condition Stochastic
 string StochasticCondition(){
@@ -65,7 +66,74 @@ double createSL(double zValue1, double zValue2, double zValue3, double zValue4){
 double createTP(double zValue1, double zValue2, double zValue3, double zValue4){
    return zValue1;
 }
+//check breakout keylv zigzag
+bool checkBreakOut(double point, string trend) {
+	MqlRates PriceInfo[];
+	ArraySetAsSeries(PriceInfo,true);
+	int copied = CopyRates(_Symbol,PERIOD_H1,0,100,PriceInfo); 
+	double close = PriceInfo[1].close;
+	double open= PriceInfo[1].open;
+	double high= PriceInfo[1].high;
+	double low= PriceInfo[1].low;
+	string model = modelCandle(high,low,open,close);
 
+	if (trend == "up"){
+		if( close > ( point + breakOut)){
+			if (model == "blue_mazu" || model == "blue_pinbar_bot"){
+				return true;
+			}
+			
+		}
+	}
+
+	if (trend == "down"){
+		if( close < point - breakOut){
+			if (model == "red_mazu" || model == "red_pinbar_top"){
+				return true;
+			}
+		}
+	}
+	 return false;
+
+}
+
+// model candle
+string modelCandle(double high, double low, double open, double close) {
+	string model;
+	double bodyCandle;
+	double sizeCandle;
+	
+	if(open > close){
+		bodyCandle = open - close;
+		sizeCandle = high - low;
+		double sizeLowClose = close - low;
+		double sizeHighOpen = high - open;
+		if (bodyCandle >= 2 * sizeCandle / 3 ){
+			return "red_mazu";	//break		
+		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeLowClose >= sizeCandle / 3){
+			return "red_pinbar_bot";
+		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeHighOpen >= sizeCandle / 3){
+			return "red_pinbar_top"; //break
+		} else {
+			return "red_spinningtop";
+		}
+	} else {
+		bodyCandle = close - open;
+		sizeCandle = high - low;
+		double sizeLowOpen = open - low;
+		double sizeHighClose = high - close;
+		if (bodyCandle >= 2 * sizeCandle / 3 ){
+			return "blue_mazu";	//break		
+		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeLowOpen >= sizeCandle / 3){
+			return "blue_pinbar_bot";//break
+		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeHighClose >= sizeCandle / 3){
+			return "blue_pinbar_top";
+		} else {
+			return "blue_spinningtop";
+		}
+	}
+	return model;;
+}
 void OnTick(){
    double Ask = NormalizeDouble(SymbolInfoDouble(_Symbol,SYMBOL_ASK),_Digits);
    double Bid = NormalizeDouble(SymbolInfoDouble(_Symbol,SYMBOL_BID),_Digits);
@@ -84,4 +152,7 @@ void OnTick(){
          trade.Buy(volumn,_Symbol,Ask,(Ask - SL*_Point),(Ask + 1.1*SL*_Point),NULL);
       }
    }
+   
+   bool check = checkBreakOut(85.224,"up");
+   Print("Status breakout", check);
  }
