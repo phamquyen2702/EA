@@ -114,8 +114,9 @@ string modelCandle(double high, double low, double open, double close) {
 			return "red_pinbar_bot";
 		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeHighOpen >= sizeCandle / 3){
 			return "red_pinbar_top"; //break
+			return "red_pinbar_top"; //break
 		} else {
-			return "red_spinningtop";
+			return "red_spinningtopaaaaaaa";
 		}
 	} else {
 		bodyCandle = close - open;
@@ -129,6 +130,7 @@ string modelCandle(double high, double low, double open, double close) {
 		} else if(bodyCandle < 2 * sizeCandle / 3 && sizeHighClose >= sizeCandle / 3){
 			return "blue_pinbar_top";
 		} else {
+			return "blue_spinningtop";
 			return "blue_spinningtop";
 		}
 	}
@@ -155,4 +157,8 @@ void OnTick(){
    
    bool check = checkBreakOut(85.224,"up");
    Print("Status breakout", check);
+   Print("Status breakout", check);
+   Print("Status breakout", check);
  }
+ 
+
